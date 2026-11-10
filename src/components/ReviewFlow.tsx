@@ -56,8 +56,8 @@ export default function ReviewFlow({ project, actionDescription }: { project: { 
   const authed = status === "authenticated";
 
   useEffect(() => {
-    void fetchPublishingAvailable().then(setAvailable);
-  }, []);
+    void fetchPublishingAvailable(project.id).then(setAvailable);
+  }, [project.id]);
 
   // Restore the draft so a failure never costs the reviewer their words.
   useEffect(() => {

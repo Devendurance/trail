@@ -101,8 +101,9 @@ export async function reconcileWithRetry(
   return last;
 }
 
-export async function fetchPublishingAvailable(): Promise<boolean | null> {
-  const r = await api<{ publishingAvailable: boolean }>("/api/config", { timeoutMs: 8000 });
+export async function fetchPublishingAvailable(projectId?: number): Promise<boolean | null> {
+  const q = projectId ? `?projectId=${projectId}` : "";
+  const r = await api<{ publishingAvailable: boolean }>(`/api/config${q}`, { timeoutMs: 8000 });
   return r.ok ? r.data.publishingAvailable : null;
 }
 

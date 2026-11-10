@@ -57,6 +57,13 @@ export const registryAbi = [
   },
   {
     type: "function",
+    name: "paused",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "bool" }],
+  },
+  {
+    type: "function",
     name: "verifier",
     stateMutability: "view",
     inputs: [],

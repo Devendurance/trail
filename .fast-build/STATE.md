@@ -44,5 +44,7 @@
 - Slice 1: live RPC chainId 0x2a5=677 OK; eth_getCode both candidates OK; tx+receipt+logs fetched from RPC; DomainMinted topic0 recomputed via keccak matches log; tokenId cross-checked Transfer/DomainMinted; from EOA (code 0x); negative cases recorded, not yet executable tests.
 
 ## Next action
-- Hero logos done (Tandot, MeMeX, Bo Wallet, BotStarter, B DEX in public/ecosystem; Tandot source is only 80px). BOT Names + BOT Chain footer logos added.
+- Launch prep done (2026-11-10): Deploy.s.sol (chain-677 guard, activates PROJECT_ID), scripts/mainnet-preflight.mjs (read-only, --post), src/lib/readiness.ts + /api/config?projectId= (true only when code, verifier==signer, unpaused, project active), docs/MAINNET_LAUNCH.md (commands, Vercel checklist, rollback). Verified: local Anvil deploy, mainnet dry-run (1.96M gas), tests. NOT done: any broadcast, Vercel env changes, Blockscout verify.
+- On funding: follow docs/MAINNET_LAUNCH.md steps 3-8.
+- (older) - Hero logos done (Tandot, MeMeX, Bo Wallet, BotStarter, B DEX in public/ecosystem; Tandot source is only 80px). BOT Names + BOT Chain footer logos added.
 - Slice 6: deploy+verify registry, set REGISTRY_ADDRESS_MAINNET + VERIFIER_PRIVATE_KEY, activate project 1 on-chain, run one real mainnet publish+reconcile. Also: add real ecosystem logos + BOT Chain logo; create isolated Neon test branch for DB tests (existing db/discovery/reconcile tests write to the shared DB and can flake in parallel).

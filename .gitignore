@@ -43,3 +43,6 @@ next-env.d.ts
 # foundry
 contracts/out/
 contracts/cache/
+
+# forge broadcast artifacts
+contracts/broadcast/
