@@ -83,7 +83,11 @@ export async function POST(req: Request) {
       await db
         .insert(rewardAllocations)
         .values({ reviewId, claimant: review.reviewer, status: "approved_unfunded" })
-        .onConflictDoNothing();
+        .onConflictDoUpdate({
+          target: rewardAllocations.reviewId,
+          set: { status: "approved_unfunded", updatedAt: new Date() },
+          setWhere: eq(rewardAllocations.status, "rejected"),
+        });
     } else {
       const existing = (await db.select().from(rewardAllocations).where(eq(rewardAllocations.reviewId, reviewId)))[0];
       if (existing && existing.status !== "claimed") {

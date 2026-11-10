@@ -2,6 +2,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { projects, qualityAssessments, reviews, rewardAllocations, supportedActions } from "@/db/schema";
 import { explorerTxUrl } from "./config";
+import { latestAssessment, rewardStateOf } from "./quality";
 import { PRIOR_MEAN, PRIOR_WEIGHT, RANK_THRESHOLD, rankProjects } from "./ranking";
 
 export const VERIFICATION_LIMITS =
@@ -54,14 +55,11 @@ export function toPublicReview(
 
 export async function rewardStateFor(reviewId: number): Promise<string> {
   const db = getDb();
-  const assessment = (await db.select().from(qualityAssessments).where(eq(qualityAssessments.reviewId, reviewId)))[0];
-  if (!assessment) return "pending_review";
-  if (assessment.decision !== "approved") return "rejected";
+  const rows = await db.select().from(qualityAssessments).where(eq(qualityAssessments.reviewId, reviewId));
+  const current = latestAssessment(rows);
+  if (!current || current.decision !== "approved") return rewardStateOf(current, null);
   const allocation = (await db.select().from(rewardAllocations).where(eq(rewardAllocations.reviewId, reviewId)))[0];
-  if (!allocation) return "approved_unfunded";
-  if (allocation.status === "claimed") return "claimed";
-  if (allocation.status === "claimable") return "claimable";
-  return "approved_unfunded";
+  return rewardStateOf(current, allocation?.status ?? null);
 }
 
 export async function listSupportedProjects() {

@@ -30,3 +30,36 @@ export function validateScores(input: unknown): { scores: QualityScores; total: 
 export function decisionForTotal(total: number): "approved" | "rejected" {
   return total >= QUALITY_THRESHOLD ? "approved" : "rejected";
 }
+
+export interface AssessmentLike {
+  id: number;
+  decision: string;
+  assessedAt: Date | string;
+}
+
+/// Deterministic "current" assessment: newest assessedAt, ties broken by
+/// highest id. The table is audit history, so older rows never override.
+export function latestAssessment<T extends AssessmentLike>(rows: T[]): T | null {
+  let best: T | null = null;
+  for (const r of rows) {
+    if (!best) {
+      best = r;
+      continue;
+    }
+    const a = new Date(r.assessedAt).getTime();
+    const b = new Date(best.assessedAt).getTime();
+    if (a > b || (a === b && r.id > best.id)) best = r;
+  }
+  return best;
+}
+
+export function rewardStateOf(
+  assessment: AssessmentLike | null,
+  allocationStatus: string | null,
+): string {
+  if (!assessment) return "pending_review";
+  if (assessment.decision !== "approved") return "rejected";
+  if (allocationStatus === "claimed") return "claimed";
+  if (allocationStatus === "claimable") return "claimable";
+  return "approved_unfunded";
+}

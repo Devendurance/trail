@@ -27,7 +27,13 @@ export async function POST(req: Request) {
   const { projectId, transactionHash } = parsed.data;
   const txHash = transactionHash.toLowerCase() as `0x${string}`;
 
-  const loaded = await loadSupportedAction(projectId, BOT_MAINNET_CHAIN_ID).catch(() => null);
+  let loaded: Awaited<ReturnType<typeof loadSupportedAction>>;
+  try {
+    loaded = await loadSupportedAction(projectId, BOT_MAINNET_CHAIN_ID);
+  } catch {
+    // A database failure is not "unsupported": fail closed with a retryable code.
+    return NextResponse.json({ eligible: false, code: "VERIFIER_UNAVAILABLE", message: "Database unavailable." }, { status: 503 });
+  }
   if (!loaded) {
     await logAttempt({ wallet: session.wallet, projectId, txHash, resultCode: "UNSUPPORTED_ACTION" });
     return NextResponse.json({
@@ -50,12 +56,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ eligible: false, code: result.code, message: result.message, explorerUrl: explorerTxUrl(txHash) });
   }
 
+  // Fail closed: any DB failure (returned or thrown) must never yield eligible=true.
   const blocked = await findBlockingReview({
     chainId: BOT_MAINNET_CHAIN_ID,
     projectId,
     reviewer: session.wallet,
     proofTxHash: result.txHash,
-  }).catch(() => "DB_ERROR");
+  }).catch(() => "DB_ERROR" as const);
   if (blocked === "DB_ERROR") {
     await logAttempt({ wallet: session.wallet, projectId, txHash, resultCode: "VERIFIER_UNAVAILABLE" });
     return NextResponse.json({ eligible: false, code: "VERIFIER_UNAVAILABLE", message: "Database unavailable." }, { status: 503 });
