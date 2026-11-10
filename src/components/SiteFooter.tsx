@@ -25,6 +25,10 @@ export default function SiteFooter() {
         </nav>
         <nav aria-label="BOT Chain">
           <h2 className="font-display text-sm font-semibold text-white">Built for BOT Chain</h2>
+          <a href={BOT_SITE_URL} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block" aria-label="BOT Chain (opens in a new tab)">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/botchain-logo.png" alt="BOT Chain" width={160} height={31} className="h-[31px] w-auto" />
+          </a>
           <ul className="muted mt-3 space-y-2 text-sm">
             <li>
               <a className="hover:text-white" href={BOT_SITE_URL} target="_blank" rel="noopener noreferrer">

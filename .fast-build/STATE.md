@@ -44,5 +44,5 @@
 - Slice 1: live RPC chainId 0x2a5=677 OK; eth_getCode both candidates OK; tx+receipt+logs fetched from RPC; DomainMinted topic0 recomputed via keccak matches log; tokenId cross-checked Transfer/DomainMinted; from EOA (code 0x); negative cases recorded, not yet executable tests.
 
 ## Next action
-- Hero logos done (Tandot, MeMeX, Bo Wallet, BotStarter, B DEX in public/ecosystem; Tandot source is only 80px). BOT Chain footer logo still pending.
+- Hero logos done (Tandot, MeMeX, Bo Wallet, BotStarter, B DEX in public/ecosystem; Tandot source is only 80px). BOT Names + BOT Chain footer logos added.
 - Slice 6: deploy+verify registry, set REGISTRY_ADDRESS_MAINNET + VERIFIER_PRIVATE_KEY, activate project 1 on-chain, run one real mainnet publish+reconcile. Also: add real ecosystem logos + BOT Chain logo; create isolated Neon test branch for DB tests (existing db/discovery/reconcile tests write to the shared DB and can flake in parallel).

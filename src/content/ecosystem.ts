@@ -12,10 +12,13 @@ export interface EcosystemLogo {
   /** Tile background for logos with transparent backgrounds. */
   background?: string;
   href?: string;
+  /** "contain" for wordmarks that must not be cropped. Default "cover". */
+  fit?: "cover" | "contain";
   layer: "foreground" | "mid" | "far";
 }
 
 export const ECOSYSTEM_LOGOS: EcosystemLogo[] = [
+  { name: "BOT Names", src: "/ecosystem/bot-names.png", color: "#6B4EFF", background: "#F4F4F0", fit: "contain", href: "/apps/bot-names", layer: "foreground" },
   { name: "Tandot", src: "/ecosystem/tandot.png", color: "#09B8B0", background: "#161616", href: "https://mainnet.tandot.edycu.dev/", layer: "foreground" },
   { name: "MeMeX", src: "/ecosystem/memex.png", color: "#8FFC4F", href: "https://www.memex.fund/", layer: "foreground" },
   { name: "Bo Wallet", src: "/ecosystem/bo-wallet.png", color: "#FD6502", href: "https://wallet.botchain.ai/zh/", layer: "foreground" },

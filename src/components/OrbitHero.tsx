@@ -10,6 +10,7 @@ interface Tile {
   src?: string;
   color: string;
   background?: string;
+  fit?: "cover" | "contain";
   href?: string;
   layer: EcosystemLogo["layer"];
   decorative: boolean;
@@ -58,7 +59,7 @@ function TileFace({ tile, size }: { tile: Tile; size: number }) {
     >
       {tile.src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={tile.src} alt="" width={size} height={size} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={tile.src} alt="" width={size} height={size} style={{ width: "100%", height: "100%", objectFit: tile.fit ?? "cover", padding: tile.fit === "contain" ? "8%" : 0 }} />
       ) : tile.decorative ? (
         <svg width={size * 0.5} height={size * 0.5} viewBox="0 0 24 24" fill="none" aria-hidden>
           <path d="M4 17c4 0 3-7 8-7s4 5 8 5" stroke={tile.color} strokeWidth="2.4" strokeLinecap="round" />
