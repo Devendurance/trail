@@ -1,0 +1,77 @@
+{
+  "network": {
+    "name": "BOT Chain mainnet",
+    "chainId": 677,
+    "rpc": "https://rpc.botchain.ai",
+    "explorer": "https://scan.botchain.ai"
+  },
+  "app": {
+    "name": "BOT Names",
+    "contract": "0xBeB7B2BD305F0d9412EB1f4C49541FD048C363CE",
+    "action": "mintDomain(string)",
+    "selector": "0xc319a11f"
+  },
+  "tx": {
+    "hash": "0xa04b7f06a8566618ef6e42fe805c77eba9cfcdec7063f7123b3d8d3ffe024d38",
+    "from": "0xb60d4aadf678c7104b97ff21f552dd288bc525ac",
+    "to": "0xbeb7b2bd305f0d9412eb1f4c49541fd048c363ce",
+    "blockNumber": 25760640,
+    "valueWei": "100000000000000000",
+    "selector": "0xc319a11f",
+    "decodedArg": "settravaltd"
+  },
+  "receipt": {
+    "status": "0x1",
+    "gasUsed": 177328,
+    "confirmations": 4018994
+  },
+  "logs": [
+    {
+      "address": "0xbeb7b2bd305f0d9412eb1f4c49541fd048c363ce",
+      "topic0": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+      "topics": [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "0x000000000000000000000000b60d4aadf678c7104b97ff21f552dd288bc525ac",
+        "0x0000000000000000000000000000000000000000000000000000000000000018"
+      ],
+      "data": "0x"
+    },
+    {
+      "address": "0xbeb7b2bd305f0d9412eb1f4c49541fd048c363ce",
+      "topic0": "0xcb748939c198a3ac8c51ea9027e77e3c96244f35ceda8277bd2af91c28a72416",
+      "topics": [
+        "0xcb748939c198a3ac8c51ea9027e77e3c96244f35ceda8277bd2af91c28a72416",
+        "0x000000000000000000000000b60d4aadf678c7104b97ff21f552dd288bc525ac",
+        "0x0000000000000000000000000000000000000000000000000000000000000018"
+      ],
+      "data": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b73657474726176616c7464000000000000000000000000000000000000000000"
+    }
+  ],
+  "checks": {
+    "chainIdOk": true,
+    "toIsDomainNFT": true,
+    "selectorOk": true,
+    "statusOk": true,
+    "fromIsEOA": true,
+    "transferMint": true,
+    "domainMintedTopic": "0xcb748939c198a3ac8c51ea9027e77e3c96244f35ceda8277bd2af91c28a72416",
+    "sameTokenId": true,
+    "emitterIsDomainNFT": true
+  },
+  "negativeCases": [
+    {
+      "tx": "0x523368ae4948b6ed63c8443535796d1a22f13adc07708a994b293756e537db7a",
+      "reason": "safeTransferFrom selector 0x42842e0e to same contract, no DomainMinted, must REJECT as mint proof"
+    },
+    {
+      "tx": "0x7ec661f24738c39b499246704df337bbb6c2812245974957636e21f80dbc4daa",
+      "reason": "BDEX router swap, wrong tx.to, must REJECT for BOT Names action"
+    }
+  ],
+  "block": {
+    "timestamp": "2026-10-06T16:41:30.000Z"
+  },
+  "verifiedAt": "2026-11-10T13:59:29.301Z",
+  "tipAtCheck": 29779634
+}
