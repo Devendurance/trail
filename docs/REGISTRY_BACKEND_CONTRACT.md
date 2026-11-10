@@ -15,7 +15,7 @@ Status: implemented and tested in Slice 2. No deployment yet.
 domain:    { name: "TrailReviewRegistry", version: "1", chainId, verifyingContract }
 type:      ReviewAuth(address reviewer,uint256 projectId,bytes32 proofTxHash,
              bytes32 contentHash,uint8 rating,uint8 outcome,uint256 nonce,uint64 deadline)
-typeHash:  keccak256("ReviewAuth(address reviewer,uint256 projectId,bytes32 proofTxHash,bytes32 contentHash,uint8 rating,uint8 outcome,uint64 nonce,uint64 deadline)")
+typeHash:  keccak256("ReviewAuth(address reviewer,uint256 projectId,bytes32 proofTxHash,bytes32 contentHash,uint8 rating,uint8 outcome,uint256 nonce,uint64 deadline)")
 rating:    1..5 user-reported. outcome: 0 = WorkedWell, 1 = WorkedWithFriction.
 nonce:     reg.nonces(reviewer), starts at 0, consumed on every publishReview.
 deadline:  unix seconds, inclusive. Recommended TTL 10 minutes from signing.
