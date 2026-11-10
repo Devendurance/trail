@@ -10,13 +10,14 @@
 - [x] Slice 2: Foundry workspace + TrailReviewRegistry + tests (forge 1.8.5, OZ v5.4.0, 23 tests pass)
 - [x] Slice 3: Postgres migrations + wallet nonce auth + receipt verifier + fixtures + signed prepare
 - [x] Slice 4: Reconcile + queries (catalog/feed/rankings) + quality states
-- [ ] Slice 5: Frontend wired to real APIs/contracts (discover -> proof -> review -> receipt)
+- [x] Slice 5: Frontend wired to real APIs/contracts (discover -> proof -> review -> receipt)
 - [ ] Slice 6: Testnet E2E -> small-value mainnet registry deploy + verify -> prod + smoke checks
 
 ## Current slice
-- Slice 5: frontend wired to real APIs/contracts (discover -> proof -> review -> receipt)
+- Slice 6 (not started): testnet/mainnet registry deploy + verify + enable publishing
 
 ## Completed
+- Slice 5 (2026-11-10): Full frontend. Pages: /, /discover, /apps/[slug], /review/[slug], /reviews/[id], /rankings, /rewards, /methodology, 404/error/loading. wagmi+viem injected wallet on chain 677, challenge/sign/verify/session/logout, wrong-network + mismatch + rejection handling. Review flow: proof check -> write (100-700) -> prepare (payload reused until deadline) -> simulate+publishReview -> receipt -> reconcile retry -> /reviews/[id]. New GET /api/config (publishingAvailable); with registry unset UI says "Mainnet review publishing not yet available." Fixes: proofs/check fails closed (VERIFIER_UNAVAILABLE, incl. action load), reward state uses latest assessment (assessedAt desc, id desc), re-approval after rejection restores allocation. DESIGN.md (user-supplied, dark) followed; N-400 for small text. Hero orbit driven by src/content/ecosystem.ts; logos PENDING from user (decorative unlabeled tiles until then). next.config: cacheComponents/partialPrefetching removed (dynamic pages). Tests: 88 vitest (Anvil client publish harness on chain 31337, no DB), tsc/eslint/next build clean, browser smoke desktop+375px on prod build.
 - Slice 4 (2026-11-10): Backend complete, no UI, no vault, no mainnet deploy. RPC identity now read live (mismatched chain fails closed); proof path fails closed on DB errors. Reconcile endpoint cross-checks tx+receipt+event+getReview+staged row, idempotent, retires stale duplicates. Public APIs: projects, project feed, review detail, rankings (Bayesian (n*avg+15)/(n+5), 3-wallet threshold, deterministic ties, reward/quality excluded). Quality rubric 0-10 + admin moderation (ADMIN_ADDRESSES, origin guard, audit history) + honest rewards/status (all disabled). Tests: 42 vitest (incl. 6 Anvil reconcile, ranking, quality, discovery) + 23 forge green; typecheck/lint/build clean; prod smoke (empty states honest, 401/403/404/503 correct).
 - Slice 3 (2026-11-10): Backend done, no UI. Neon Postgres project `trail` (royal-bar-91555481, PG 18); drizzle schema (projects, supported_actions, login_nonces, reviews, verification_attempts) with partial-unique published guards; migrate via db:generate/db:migrate (no push). Docs nonce typeHash fixed to uint256 (contract is source of truth). Auth: challenge/verify/session/logout, single-use nonces, HMAC sessions. Verifier: 14 checks against live RPC; seeded BOT Names project 1 + v1 action. Endpoints: proofs/check, reviews/prepare (NOT_CONFIGURED until registry deploys). Tests: 24 vitest pass (verifier 9, auth 9, db 3, anvil parity 3); forge 23/23; typecheck/lint/build clean; live prod smoke (challenge->verify->session->check->prepare->reuse-reject) green.
 - Slice 2 (2026-11-10): TrailReviewRegistry live in contracts/src/. EIP-712 auth (reviewer, projectId, proofTxHash, contentHash, rating, outcome, nonce, deadline). Guarantees: caller==reviewer, verifier sig, chain+contract-bound domain, expiry, rating 1-5, active projects, nonzero hashes, one review per wallet/app, proof single-use incl. cross-project, append-only reviews, admin rotate/toggle/pause. forge build clean, forge test 23/23 pass (3 pos incl. 2 fuzz x256 runs, 20 neg). Handoff doc docs/REGISTRY_BACKEND_CONTRACT.md. Foundry 1.8.5 official build (1.9.0 upgrade download timed out, retriable). OZ pinned v5.4.0 (c64a1ed), forge-std dc647cc. No deployment, no UI, no vault.
@@ -36,10 +37,11 @@
 - None. REGISTRY_ADDRESS_MAINNET unset (Slice 6); prepare/reconcile honestly return NOT_CONFIGURED.
 
 ## Verification
+- Slice 5: vitest 88/88 (rerun; one parallel-DB flake seen once), tsc, eslint, next build (22 routes) clean; browser: landing/discover/app/review/rewards/rankings/404 live data, mobile 375px no h-scroll. NOT tested: real wallet extension flow, mainnet publish.
 - Slice 4: db:generate+migrate+check clean (0002 migration), vitest 42/42, forge 23/23, tsc/eslint/next build clean (12 routes), prod smoke green incl. admin 401/403 and reconcile 503.
 - Slice 3: db:generate (no drift), db:migrate applied, db:check clean, vitest 24/24, tsc clean, eslint clean, next build clean (6 API routes), forge 23/23, live smoke on prod build green.
 - Slice 2: forge build clean; forge test 23 passed / 0 failed. Root eslint skipped (no TS changes; contracts outside its scope).
 - Slice 1: live RPC chainId 0x2a5=677 OK; eth_getCode both candidates OK; tx+receipt+logs fetched from RPC; DomainMinted topic0 recomputed via keccak matches log; tokenId cross-checked Transfer/DomainMinted; from EOA (code 0x); negative cases recorded, not yet executable tests.
 
 ## Next action
-- Slice 5: frontend wired to real APIs/contracts. Do NOT deploy contracts or build the vault.
+- Slice 6: deploy+verify registry, set REGISTRY_ADDRESS_MAINNET + VERIFIER_PRIVATE_KEY, activate project 1 on-chain, run one real mainnet publish+reconcile. Also: add real ecosystem logos + BOT Chain logo; create isolated Neon test branch for DB tests (existing db/discovery/reconcile tests write to the shared DB and can flake in parallel).

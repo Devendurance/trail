@@ -1,0 +1,111 @@
+/// Client-safe registry ABI (no server imports).
+export const registryAbi = [
+  {
+    type: "function",
+    name: "getReviewer",
+    stateMutability: "view",
+    inputs: [{ name: "reviewId", type: "uint256" }],
+    outputs: [{ type: "address" }],
+  },
+  {
+    type: "function",
+    name: "getReview",
+    stateMutability: "view",
+    inputs: [{ name: "reviewId", type: "uint256" }],
+    outputs: [
+      {
+        name: "",
+        type: "tuple",
+        components: [
+          { name: "reviewer", type: "address" },
+          { name: "projectId", type: "uint256" },
+          { name: "proofTxHash", type: "bytes32" },
+          { name: "contentHash", type: "bytes32" },
+          { name: "rating", type: "uint8" },
+          { name: "outcome", type: "uint8" },
+        ],
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "nonces",
+    stateMutability: "view",
+    inputs: [{ name: "reviewer", type: "address" }],
+    outputs: [{ type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "hasReviewed",
+    stateMutability: "view",
+    inputs: [{ name: "projectId", type: "uint256" }, { name: "reviewer", type: "address" }],
+    outputs: [{ type: "bool" }],
+  },
+  {
+    type: "function",
+    name: "proofUsed",
+    stateMutability: "view",
+    inputs: [{ name: "proofTxHash", type: "bytes32" }],
+    outputs: [{ type: "bool" }],
+  },
+  {
+    type: "function",
+    name: "projectActive",
+    stateMutability: "view",
+    inputs: [{ name: "projectId", type: "uint256" }],
+    outputs: [{ type: "bool" }],
+  },
+  {
+    type: "function",
+    name: "verifier",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "address" }],
+  },
+  {
+    type: "event",
+    name: "ReviewPublished",
+    inputs: [
+      { name: "reviewId", type: "uint256", indexed: true },
+      { name: "projectId", type: "uint256", indexed: true },
+      { name: "reviewer", type: "address", indexed: true },
+      { name: "proofTxHash", type: "bytes32", indexed: false },
+      { name: "contentHash", type: "bytes32", indexed: false },
+      { name: "rating", type: "uint8", indexed: false },
+      { name: "outcome", type: "uint8", indexed: false },
+    ],
+  },
+  {
+    type: "function",
+    name: "setProjectActive",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "projectId", type: "uint256" },
+      { name: "active", type: "bool" },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "publishReview",
+    stateMutability: "nonpayable",
+    inputs: [
+      {
+        name: "auth",
+        type: "tuple",
+        components: [
+          { name: "reviewer", type: "address" },
+          { name: "projectId", type: "uint256" },
+          { name: "proofTxHash", type: "bytes32" },
+          { name: "contentHash", type: "bytes32" },
+          { name: "rating", type: "uint8" },
+          { name: "outcome", type: "uint8" },
+          { name: "nonce", type: "uint256" },
+          { name: "deadline", type: "uint64" },
+        ],
+      },
+      { name: "sig", type: "bytes" },
+    ],
+    outputs: [{ name: "reviewId", type: "uint256" }],
+  },
+] as const;

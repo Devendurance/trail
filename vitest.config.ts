@@ -5,9 +5,10 @@ export default defineConfig({
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
+  esbuild: { jsx: "automatic" },
   test: {
     environment: "node",
-    include: ["test/**/*.test.ts"],
+    include: ["test/**/*.test.{ts,tsx}"],
     setupFiles: ["./test/setup.ts"],
     testTimeout: 120_000,
     pool: "forks",

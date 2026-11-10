@@ -19,7 +19,7 @@ vi.mock("@/lib/verify-botnames", () => ({
     txHash: HASH,
     from: WALLET,
     domainName: "x",
-    tokenId: 1n,
+    tokenId: BigInt(1),
     blockNumber: 1,
     confirmations: 5,
   }),

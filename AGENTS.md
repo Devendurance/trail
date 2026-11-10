@@ -88,3 +88,15 @@
 
 - Always follow or reference the UI design system when creating or reviewing components or pages.
 - Design System: @DESIGN.md
+
+
+## PROJECT RULES (logged during Slice 5)
+
+
+- Client code must never import `src/lib/registry.ts`, `config.ts`, `chain.ts` or `db`. Use `src/lib/client/*` and `src/lib/registry-abi.ts`.
+- `cacheComponents` is off in `next.config.ts`. Data pages use `export const dynamic = "force-dynamic"` and read `src/lib/server-data.ts`.
+- Review text and authorization come from `/api/reviews/prepare` and are used exactly as returned. Never build EIP-712 data in the browser.
+- Reuse a prepared authorization on retry until its deadline. Prepare stages a row that blocks the same proof for 10 minutes.
+- Never show "Review published" until `/api/reviews/reconcile` returns `reconciled: true`.
+- Small text uses `#8A8A8A` (N-400), never `#6B6B6B`, to keep AA contrast.
+- Tests must not write to production Neon. Prefer mocks and the local Anvil harness.
