@@ -1,0 +1,1 @@
+DROP INDEX "quality_assessments_review_unique";

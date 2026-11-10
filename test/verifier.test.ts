@@ -26,7 +26,7 @@ const ACTION = {
 
 function stubProvider(tx: unknown, receipt: unknown, tip: bigint, code: Hex | undefined = "0x"): ProofProvider {
   return {
-    chainId: () => 677,
+    getChainId: async () => 677,
     getBlockNumber: async () => tip,
     getTransaction: async () => tx as Transaction,
     getReceipt: async () => receipt as TransactionReceipt,
@@ -178,9 +178,27 @@ describe("BOT Names mint verifier (recorded fixtures)", () => {
     expect(res.code).toBe("UNSUPPORTED_ACTION");
   });
 
+  it("rejects a mismatched RPC identity", async () => {
+    const provider = {
+      getChainId: async () => 1,
+      getBlockNumber: async () => BigInt(29780000),
+      getTransaction: async () => null,
+      getReceipt: async () => null,
+      getCode: async () => "0x" as Hex,
+    };
+    const res = await verifyMintProof({
+      provider,
+      action: ACTION,
+      wallet: "0xb60d4aadf678c7104b97ff21f552dd288bc525ac",
+      txHash: PILOT.tx.hash,
+    });
+    expect(res.eligible).toBe(false);
+    expect(res.code).toBe("WRONG_CHAIN");
+  });
+
   it("returns TX_NOT_FOUND for unknown hashes", async () => {
     const provider: ProofProvider = {
-      chainId: () => 677,
+      getChainId: async () => 677,
       getBlockNumber: async () => BigInt(29780000),
       getTransaction: async () => null,
       getReceipt: async () => null,

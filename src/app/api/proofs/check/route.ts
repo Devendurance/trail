@@ -55,7 +55,11 @@ export async function POST(req: Request) {
     projectId,
     reviewer: session.wallet,
     proofTxHash: result.txHash,
-  }).catch(() => null);
+  }).catch(() => "DB_ERROR");
+  if (blocked === "DB_ERROR") {
+    await logAttempt({ wallet: session.wallet, projectId, txHash, resultCode: "VERIFIER_UNAVAILABLE" });
+    return NextResponse.json({ eligible: false, code: "VERIFIER_UNAVAILABLE", message: "Database unavailable." }, { status: 503 });
+  }
   if (blocked) {
     await logAttempt({ wallet: session.wallet, projectId, txHash, resultCode: blocked });
     return NextResponse.json({

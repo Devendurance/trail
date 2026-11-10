@@ -65,6 +65,16 @@ export async function verifyMintProof(args: {
   const emitter = action.eventEmitter.toLowerCase();
   const domainMintedTopic = action.eventTopic0.toLowerCase();
 
+  let rpcChainId: number | null;
+  try {
+    rpcChainId = await provider.getChainId();
+  } catch {
+    return fail("VERIFIER_UNAVAILABLE", "Proof RPC is unreachable. Try again.");
+  }
+  if (rpcChainId !== action.chainId) {
+    return fail("WRONG_CHAIN", `Connected RPC reports chain ${String(rpcChainId)}, expected ${action.chainId}.`);
+  }
+
   let tx;
   try {
     tx = await provider.getTransaction(txHash);

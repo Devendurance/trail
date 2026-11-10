@@ -12,6 +12,33 @@ import { reviewAuthTypes, reviewAuthDomain, type ReviewAuthInput } from "./eip71
 export const registryAbi = [
   {
     type: "function",
+    name: "getReviewer",
+    stateMutability: "view",
+    inputs: [{ name: "reviewId", type: "uint256" }],
+    outputs: [{ type: "address" }],
+  },
+  {
+    type: "function",
+    name: "getReview",
+    stateMutability: "view",
+    inputs: [{ name: "reviewId", type: "uint256" }],
+    outputs: [
+      {
+        name: "",
+        type: "tuple",
+        components: [
+          { name: "reviewer", type: "address" },
+          { name: "projectId", type: "uint256" },
+          { name: "proofTxHash", type: "bytes32" },
+          { name: "contentHash", type: "bytes32" },
+          { name: "rating", type: "uint8" },
+          { name: "outcome", type: "uint8" },
+        ],
+      },
+    ],
+  },
+  {
+    type: "function",
     name: "nonces",
     stateMutability: "view",
     inputs: [{ name: "reviewer", type: "address" }],

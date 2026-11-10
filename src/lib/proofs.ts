@@ -24,9 +24,10 @@ export async function loadSupportedAction(projectId: number, chainId: number) {
   return { project, action };
 }
 
-export type BlockCode = "PROOF_ALREADY_USED" | "REVIEW_ALREADY_EXISTS";
+export type BlockCode = "PROOF_ALREADY_USED" | "REVIEW_ALREADY_EXISTS" | "DB_ERROR";
 
-/** DB-level reuse guard. Stale prepared rows (past deadline) never block. */
+/** DB-level reuse guard. Stale prepared rows (past deadline) never block.
+ *  Returns DB_ERROR when the database cannot be read: callers must fail closed. */
 export async function findBlockingReview(args: {
   chainId: number;
   projectId: number;
@@ -34,25 +35,30 @@ export async function findBlockingReview(args: {
   proofTxHash: string;
 }): Promise<BlockCode | null> {
   const db = getDb();
-  const rows = await db
-    .select({ status: reviews.status, authDeadline: reviews.authDeadline })
-    .from(reviews)
-    .where(and(eq(reviews.chainId, args.chainId), eq(reviews.proofTxHash, args.proofTxHash.toLowerCase())));
+  let rows: { status: string | null; authDeadline: Date | null }[];
+  let mine: { status: string | null; authDeadline: Date | null }[];
+  try {
+    rows = await db
+      .select({ status: reviews.status, authDeadline: reviews.authDeadline })
+      .from(reviews)
+      .where(and(eq(reviews.chainId, args.chainId), eq(reviews.proofTxHash, args.proofTxHash.toLowerCase())));
+    mine = await db
+      .select({ status: reviews.status, authDeadline: reviews.authDeadline })
+      .from(reviews)
+      .where(
+        and(
+          eq(reviews.projectId, args.projectId),
+          eq(reviews.reviewer, args.reviewer.toLowerCase()),
+        ),
+      );
+  } catch {
+    return "DB_ERROR";
+  }
   const now = new Date();
   const active = rows.filter(
     (r) => r.status === "published" || (r.status === "prepared" && r.authDeadline && r.authDeadline > now),
   );
   if (active.length > 0) return "PROOF_ALREADY_USED";
-
-  const mine = await db
-    .select({ status: reviews.status, authDeadline: reviews.authDeadline })
-    .from(reviews)
-    .where(
-      and(
-        eq(reviews.projectId, args.projectId),
-        eq(reviews.reviewer, args.reviewer.toLowerCase()),
-      ),
-    );
   const mineActive = mine.filter(
     (r) => r.status === "published" || (r.status === "prepared" && r.authDeadline && r.authDeadline > now),
   );

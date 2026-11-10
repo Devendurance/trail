@@ -18,7 +18,7 @@ export type PublicClient = ReturnType<typeof botPublicClient>;
 /// Minimal read surface the verifier needs. Production uses a viem client;
 /// tests inject recorded fixtures.
 export interface ProofProvider {
-  chainId(): number;
+  getChainId(): Promise<number | null>;
   getBlockNumber(): Promise<bigint>;
   getTransaction(hash: `0x${string}`): Promise<Transaction | null>;
   getReceipt(hash: `0x${string}`): Promise<TransactionReceipt | null>;
@@ -27,7 +27,13 @@ export interface ProofProvider {
 
 export function liveProvider(client: PublicClient): ProofProvider {
   return {
-    chainId: () => BOT_MAINNET_CHAIN_ID,
+    getChainId: async () => {
+      try {
+        return await client.getChainId();
+      } catch {
+        return null;
+      }
+    },
     getBlockNumber: () => client.getBlockNumber(),
     getTransaction: async (hash) => {
       try {

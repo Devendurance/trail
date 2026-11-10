@@ -87,7 +87,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       eligible: false,
       code: blocked,
-      message: blocked === "VERIFIER_UNAVAILABLE" ? "Database unavailable." : "Proof or review already recorded.",
+      message: blocked === "DB_ERROR" || blocked === "VERIFIER_UNAVAILABLE" ? "Database unavailable." : "Proof or review already recorded.",
     });
   }
 

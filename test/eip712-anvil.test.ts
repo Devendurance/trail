@@ -138,7 +138,7 @@ describe.skipIf(!HAS_DEPS)("EIP-712 parity: TS signature accepted by local regis
       ],
     };
     const provider = {
-      chainId: () => 677,
+      getChainId: async () => 677,
       getBlockNumber: async () => BigInt(25760700),
       getTransaction: async () => tx as never,
       getReceipt: async () => receipt as never,

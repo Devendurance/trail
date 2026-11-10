@@ -104,6 +104,44 @@ export const verificationAttempts = pgTable("verification_attempts", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const qualityAssessments = pgTable("quality_assessments", {
+    id: serial("id").primaryKey(),
+    reviewId: integer("review_id")
+      .notNull()
+      .references(() => reviews.id),
+    specificity: smallint("specificity").notNull(),
+    outcomeClarity: smallint("outcome_clarity").notNull(),
+    helpfulness: smallint("helpfulness").notNull(),
+    originality: smallint("originality").notNull(),
+    actionability: smallint("actionability").notNull(),
+    total: smallint("total").notNull(),
+    decision: text("decision").notNull(),
+    assessor: text("assessor").notNull(),
+    reason: text("reason").notNull(),
+    assessedAt: timestamp("assessed_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  // No unique constraint: every moderation decision is kept as audit history.
+  // The latest assessment per review is the current one.
+);
+
+export const rewardAllocations = pgTable(
+  "reward_allocations",
+  {
+    id: serial("id").primaryKey(),
+    reviewId: integer("review_id")
+      .notNull()
+      .references(() => reviews.id),
+    claimant: text("claimant").notNull(),
+    amountWei: text("amount_wei"),
+    status: text("status").notNull().default("approved_unfunded"),
+    chainTxHash: text("chain_tx_hash"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("reward_allocations_review_unique").on(t.reviewId)],
+);
+
 export type Project = typeof projects.$inferSelect;
 export type SupportedAction = typeof supportedActions.$inferSelect;
 export type Review = typeof reviews.$inferSelect;

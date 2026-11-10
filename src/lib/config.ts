@@ -30,6 +30,23 @@ export function getAppDomain(): string {
   return process.env.APP_DOMAIN ?? "localhost:3000";
 }
 
+export function getAdminAddresses(): string[] {
+  return (process.env.ADMIN_ADDRESSES ?? "")
+    .split(",")
+    .map((a) => a.trim().toLowerCase())
+    .filter((a) => /^0x[0-9a-f]{40}$/.test(a));
+}
+
+export function rewardsProgramFlags() {
+  return {
+    visible: process.env.REWARDS_PROGRAM_VISIBLE === "true",
+    accepting: process.env.REWARDS_ACCEPTING_SUBMISSIONS === "true",
+    claimEnabled: process.env.REWARDS_CLAIM_ENABLED === "true",
+    funded: false,
+    vault: null as string | null,
+  };
+}
+
 export const CONFIRMATIONS_REQUIRED = 3;
 export const AUTH_TTL_SECONDS = 600;
 export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
