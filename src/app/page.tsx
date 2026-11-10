@@ -20,7 +20,7 @@ export default async function Home() {
     <>
       <section className="stage relative isolate flex min-h-[calc(100svh-64px)] items-center justify-center overflow-hidden">
         <OrbitHero apps={apps.map((p) => ({ name: p.name, href: `/apps/${p.slug}` }))} />
-        <div className="relative z-10 mx-auto flex max-w-[460px] flex-col items-center px-6 pb-8 text-center" style={{ marginTop: "-4vh" }}>
+        <div data-orbit-text className="relative z-10 mx-auto flex max-w-[460px] flex-col items-center px-6 pb-8 text-center" style={{ marginTop: "-4vh" }}>
           <h1 className="text-[32px] leading-[1.1] md:text-5xl">Reviews from people who actually used it</h1>
           <p className="mt-3 max-w-[440px] text-[17px] leading-[1.55] text-[var(--n400)]">
             Find BOT Chain apps through firsthand reviews, each backed by proof the reviewer did the real thing.

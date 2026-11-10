@@ -33,7 +33,7 @@ function buildTiles(extra: { name: string; href: string }[]): Tile[] {
     .map((e, i) => ({ key: `mono-${i}`, name: e.name, href: e.href, color: "#B8B8B8", layer: "foreground", decorative: false }));
   const tiles = [...real, ...monos];
   let i = 0;
-  while (tiles.length < 8 && i < DECORATIVE_TILES.length) {
+  while (tiles.length < 4 && i < DECORATIVE_TILES.length) {
     tiles.push({ key: `deco-${i}`, ...DECORATIVE_TILES[i], decorative: true });
     i++;
   }
@@ -101,16 +101,28 @@ export default function OrbitHero({ apps }: { apps: { name: string; href: string
       const tablet = w < 1024;
       const size = mobile ? 52 : tablet ? 64 : 80;
       const trailLen = mobile ? 80 : tablet ? 120 : 160;
-      const a = Math.min(w * (mobile ? 0.4 : 0.42), 560);
-      const b = Math.min(h * (mobile ? 0.34 : 0.38), 270);
+      // Centre the ellipse on the text block and keep every tile outside it
+      // (text half-size plus tile radius plus 24px, scaled to pass the corners).
+      const text = stage.parentElement?.querySelector("[data-orbit-text]") as HTMLElement | null;
+      const sr = stage.getBoundingClientRect();
+      const tr0 = text?.getBoundingClientRect();
+      const cx = tr0 ? tr0.left - sr.left + tr0.width / 2 - w / 2 : 0;
+      const cy = tr0 ? tr0.top - sr.top + tr0.height / 2 - h / 2 : 0;
+      const hw = (tr0 ? tr0.width / 2 : 200) + size / 2 + 24;
+      const hh = (tr0 ? tr0.height / 2 : 140) + size / 2 + 24;
+      // Keep tiles on screen: the clearance ellipse is capped to the stage.
+      const aMax = Math.abs(cx) < w / 2 ? w / 2 - size / 2 - 6 - Math.abs(cx) : w / 2;
+      const bMax = h / 2 - size / 2 - 6 - Math.abs(cy);
+      const a = Math.min(Math.max(Math.min(w * (mobile ? 0.4 : 0.42), 560), hw * 1.35), aMax);
+      const b = Math.min(Math.max(Math.min(h * (mobile ? 0.34 : 0.38), 270), hh * 1.35), bMax);
       tiles.forEach((tile, i) => {
         const el = itemRefs.current[i];
         const tr = trailRefs.current[i];
         if (!el || !tr) return;
         const L = LAYER[tile.layer];
         const t = starts[i] + theta;
-        const x = a * Math.cos(t);
-        const y = b * Math.sin(t);
+        const x = cx + a * Math.cos(t);
+        const y = cy + b * Math.sin(t);
         const ang = Math.atan2(b * Math.cos(t), -a * Math.sin(t));
         const s = size * L.scale;
         el.style.width = `${s}px`;
@@ -160,8 +172,10 @@ export default function OrbitHero({ apps }: { apps: { name: string; href: string
     <div ref={stageRef} className="orbit-stage absolute inset-0 overflow-hidden" aria-hidden={tiles.every((t) => t.decorative) ? true : undefined}>
       {tiles.map((tile, i) => {
         const L = LAYER[tile.layer];
-        const interactive = !tile.decorative && tile.layer === "foreground" && tile.href;
+        const interactive = !tile.decorative && tile.href;
+        const external = Boolean(tile.href?.startsWith("http"));
         const face = <TileFace tile={tile} size={80} />;
+        const Wrapper = external ? "a" : Link;
         return (
           <div
             key={tile.key}
@@ -192,8 +206,9 @@ export default function OrbitHero({ apps }: { apps: { name: string; href: string
               }}
             />
             {interactive ? (
-              <Link
+              <Wrapper
                 href={tile.href!}
+                {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 aria-label={`Open ${tile.name}`}
                 className="block h-full w-full"
                 style={{ borderRadius: "22%" }}
@@ -205,7 +220,7 @@ export default function OrbitHero({ apps }: { apps: { name: string; href: string
                 <div style={{ width: "100%", height: "100%", transform: "scale(1)" }}>
                   <div style={{ width: "100%", height: "100%" }} className="[&>div]:!h-full [&>div]:!w-full">{face}</div>
                 </div>
-              </Link>
+              </Wrapper>
             ) : (
               <div className="h-full w-full [&>div]:!h-full [&>div]:!w-full" aria-hidden>{face}</div>
             )}
