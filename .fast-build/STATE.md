@@ -7,17 +7,18 @@
 
 ## MVP slices
 - [x] Slice 1: Repo truth + toolchain + ONE real pilot tx evidence fixture (no UI)
-- [ ] Slice 2: Foundry workspace + TrailReviewRegistry contract + pos/neg tests
+- [x] Slice 2: Foundry workspace + TrailReviewRegistry + tests (forge 1.8.5, OZ v5.4.0, 23 tests pass)
 - [ ] Slice 3: Postgres migrations + wallet nonce auth + receipt verifier + fixtures + signed prepare
 - [ ] Slice 4: Reconcile + queries (catalog/feed/rankings) + quality states
 - [ ] Slice 5: Frontend wired to real APIs/contracts (discover -> proof -> review -> receipt)
 - [ ] Slice 6: Testnet E2E -> small-value mainnet registry deploy + verify -> prod + smoke checks
 
 ## Current slice
-- Slice 2: Foundry workspace + TrailReviewRegistry + tests
+- Slice 3: Postgres migrations + wallet nonce auth + receipt verifier + signed prepare
 
 ## Completed
-- Slice 1 (2026-11-10): GitHub repo exists but IS EMPTY (created 13:35Z, no refs); local Next.js starter on master, 1 commit, no remote. Toolchain: node 24, npm 11, gh OK; forge/cast MISSING. Pinned BOT Names mintDomain pilot tx 0xa04b7f06... (block 25760640, domain "settravaltd", tokenId 24, 0.1 BOT fee, ~4M confirmations). Evidence: evidence/pilot-proof.botnames-mint.json + evidence/domainnft.abi.json. BDEX router live but rejected for V1 (nested-swap verification risk).
+- Slice 2 (2026-11-10): TrailReviewRegistry live in contracts/src/. EIP-712 auth (reviewer, projectId, proofTxHash, contentHash, rating, outcome, nonce, deadline). Guarantees: caller==reviewer, verifier sig, chain+contract-bound domain, expiry, rating 1-5, active projects, nonzero hashes, one review per wallet/app, proof single-use incl. cross-project, append-only reviews, admin rotate/toggle/pause. forge build clean, forge test 23/23 pass (3 pos incl. 2 fuzz x256 runs, 20 neg). Handoff doc docs/REGISTRY_BACKEND_CONTRACT.md. Foundry 1.8.5 official build (1.9.0 upgrade download timed out, retriable). OZ pinned v5.4.0 (c64a1ed), forge-std dc647cc. No deployment, no UI, no vault.
+- Slice 1 pushed as 797b5f6 on origin/main. Pilot proof: BOT Names mintDomain tx 0xa04b7f06... block 25760640, tokenId 24, domain "settravaltd" (evidence/pilot-proof.botnames-mint.json). BDEX rejected for V1.
 
 ## Existing capabilities
 - capability: Next.js 16 + React 19 starter (gsap/lenis/lucide pre-added by user)
@@ -25,16 +26,16 @@
   - status: partial (scaffold only, no Trail code)
 
 ## Remaining MVP gaps
-- gap: No contract, verifier, DB, or API yet; frontend is stock template
-  - why it blocks the demo: core action (proof -> publish) has no backend
-  - next smallest complete slice: Slice 2 contract + tests
+- gap: No DB, verifier API, or frontend yet; registry done and tested
+  - why it blocks the demo: proof must be verified off-chain and signed before publish
+  - next smallest complete slice: Slice 3 backend
 
 ## Blockers
-- forge/cast missing (install Foundry before Slice 2). NoForge run yet.
-- Push pending: remote empty; rename master->main on first push.
+- None for Slice 2. Foundry 1.9.0 upgrade pending (network timeout); 1.8.5 works.
 
 ## Verification
+- Slice 2: forge build clean; forge test 23 passed / 0 failed. Root eslint skipped (no TS changes; contracts outside its scope).
 - Slice 1: live RPC chainId 0x2a5=677 OK; eth_getCode both candidates OK; tx+receipt+logs fetched from RPC; DomainMinted topic0 recomputed via keccak matches log; tokenId cross-checked Transfer/DomainMinted; from EOA (code 0x); negative cases recorded, not yet executable tests.
 
 ## Next action
-- Install Foundry, scaffold contracts/, write TrailReviewRegistry + Foundry tests (pos + adversarial), run forge test. Do NOT start frontend wiring.
+- Slice 3: DB migrations, nonce auth, BOT Names receipt verifier + fixtures from evidence/, signed prepare endpoint. Do NOT start frontend wiring.
